@@ -4,7 +4,7 @@
 .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: -.03em; }
 .brand > span:last-child { display: flex; flex-direction: column; }
 .brand small { margin-top: 3px; font: 400 8px/1 var(--mono); color: #696773; letter-spacing: .12em; }
-.brand-mark { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid #4f426d; background: linear-gradient(135deg, #201c31, #121117); color: var(--violet-2); font: 500 14px var(--mono); }
+.brand-mark { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; overflow: hidden; white-space: nowrap; border: 1px solid #4f426d; background: linear-gradient(135deg, #201c31, #121117); color: var(--violet-2); font: 500 14px/1 var(--mono); }
 .brand-mark span { color: #fff; }
 .sidebar nav { margin-top: 68px; display: grid; gap: 8px; }
 .sidebar nav a { display: flex; align-items: center; gap: 13px; padding: 11px 12px; color: #777582; border-left: 2px solid transparent; font-size: 13px; transition: .2s; }
