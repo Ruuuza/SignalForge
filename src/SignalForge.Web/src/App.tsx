@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { api, demoDashboard } from './api'
 import { localizeCampaignText, translations, type Language } from './i18n'
@@ -7,7 +7,7 @@ import './App.css'
 
 type Theme = 'dark' | 'light'
 type Translation = (typeof translations)[Language]
-type IconName = 'grid' | 'pulse' | 'layers' | 'terminal' | 'github' | 'plus' | 'arrow' | 'sun' | 'moon' | 'globe'
+type IconName = 'grid' | 'pulse' | 'layers' | 'terminal' | 'user' | 'github' | 'linkedin' | 'plus' | 'arrow' | 'sun' | 'moon' | 'globe'
 
 const initialLanguage = (): Language => localStorage.getItem('signalforge-language') === 'pt-BR' ? 'pt-BR' : 'en-US'
 const initialTheme = (): Theme => {
@@ -22,7 +22,9 @@ const Icon = ({ name }: { name: IconName }) => {
     pulse: <path d="M3 12h4l2.4-7 4.2 14 2.2-7H21"/>,
     layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></>,
     terminal: <><path d="m5 7 4 4-4 4M12 17h7"/><rect x="2" y="3" width="20" height="18" rx="2"/></>,
+    user: <><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
     github: <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.54 1.03 1.54 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.58 9.58 0 0 1 12 6.82a9.6 9.6 0 0 1 2.5.34c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.86v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>,
+    linkedin: <><rect x="3" y="9" width="4" height="12"/><path d="M5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM11 21v-7a4 4 0 0 1 8 0v7M11 9v12M19 21v-7"/></>,
     plus: <path d="M12 5v14M5 12h14"/>,
     arrow: <path d="M5 12h14m-6-6 6 6-6 6"/>,
     sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></>,
@@ -32,9 +34,19 @@ const Icon = ({ name }: { name: IconName }) => {
   return <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>
 }
 
-const MetricCard = ({ label, value, detail, accent }: { label: string; value: string; detail: string; accent?: boolean }) => (
+const Hint = ({ label, text }: { label: string; text: string }) => {
+  const id = useId()
+  return <span className="tooltip">
+    <button type="button" className="tooltip-trigger" aria-label={`${label}: ${text}`} aria-describedby={id}>i</button>
+    <span className="tooltip-content" id={id} role="tooltip">{text}</span>
+  </span>
+}
+
+const HeadingWithHint = ({ children, hint }: { children: string; hint: string }) => <div className="heading-line"><h2>{children}</h2><Hint label={children} text={hint}/></div>
+
+const MetricCard = ({ label, value, detail, hint, accent }: { label: string; value: string; detail: string; hint: string; accent?: boolean }) => (
   <article className={`metric-card ${accent ? 'accent' : ''}`}>
-    <div className="metric-label"><span>{label}</span><span className="metric-spark">↗</span></div>
+    <div className="metric-label"><span>{label}</span><Hint label={label} text={hint}/></div>
     <strong>{value}</strong>
     <small>{detail}</small>
   </article>
@@ -109,6 +121,7 @@ function App() {
   const [connected, setConnected] = useState(false)
   const [busy, setBusy] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [activeCase, setActiveCase] = useState(0)
   const [noticeKey, setNoticeKey] = useState<keyof Translation['notices'] | null>(null)
   const t = translations[language]
   const formatNumber = useMemo(() => new Intl.NumberFormat(language, { notation: 'compact', maximumFractionDigits: 1 }), [language])
@@ -164,7 +177,7 @@ function App() {
   return <div className="app-shell">
     <aside className="sidebar">
       <a className="brand" href="#overview"><span className="brand-mark">S<span>F</span></span><span>SignalForge<small>OPERATIONS CONTROL</small></span></a>
-      <nav>{(['grid', 'pulse', 'layers', 'terminal'] as IconName[]).map((icon, index) => <a className={index === 0 ? 'active' : ''} href={['#overview', '#pipelines', '#architecture', '#engineering'][index]} key={t.nav[index]}><Icon name={icon}/>{t.nav[index]}</a>)}</nav>
+      <nav>{(['grid', 'pulse', 'layers', 'terminal', 'user'] as IconName[]).map((icon, index) => <a className={index === 0 ? 'active' : ''} href={['#overview', '#pipelines', '#architecture', '#engineering', '#about'][index]} key={t.nav[index]}><Icon name={icon}/>{t.nav[index]}</a>)}</nav>
       <div className="sidebar-foot"><span className={`connection ${connected ? 'online' : ''}`}><i/>{connected ? t.apiConnected : t.demoSnapshot}</span><small>{t.stack}</small></div>
     </aside>
 
@@ -181,22 +194,33 @@ function App() {
       </header>
       <div className="content">
         {noticeKey && <div className="notice" role="status"><span>{t.notices[noticeKey]}</span><button onClick={() => setNoticeKey(null)} aria-label={t.modal.close}>×</button></div>}
-        <section className="hero-section" id="overview"><div><span className="eyebrow">{t.portfolioLabel}</span><h1>{t.heroLead} <em>{t.heroAccent}</em></h1><p>{t.heroDescription}</p><div className="hero-actions"><button className="button primary" onClick={() => setModalOpen(true)}><Icon name="plus"/>{t.newJourney}</button><a className="button ghost" href="#architecture">{t.exploreArchitecture}<Icon name="arrow"/></a></div></div><div className="hero-orbit"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="core"><span>{dashboard.activeCampaigns}</span><small>{t.livePipelines}</small></div><span className="node n1">API</span><span className="node n2">EVENTS</span><span className="node n3">DATA</span></div></section>
+        <section className="hero-section" id="overview"><div><div className="eyebrow-line"><span className="eyebrow">{t.portfolioLabel}</span><Hint label={t.portfolioLabel} text={t.tooltips.hero}/></div><h1>{t.heroLead} <em>{t.heroAccent}</em></h1><p>{t.heroDescription}</p><div className="hero-actions"><button className="button primary" onClick={() => setModalOpen(true)}><Icon name="plus"/>{t.newJourney}</button><a className="button ghost" href="#architecture">{t.exploreArchitecture}<Icon name="arrow"/></a></div></div><div className="hero-orbit"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="core" tabIndex={0} title={t.tooltips.livePipelines} aria-label={`${dashboard.activeCampaigns} ${t.livePipelines}. ${t.tooltips.livePipelines}`}><div className="core-content"><span>{dashboard.activeCampaigns}</span><small>{t.livePipelines}</small></div></div><span className="node n1">API</span><span className="node n2">EVENTS</span><span className="node n3">DATA</span></div></section>
 
-        <section className="metrics-grid"><MetricCard label={t.metrics[0][0]} value={formatNumber.format(dashboard.totalProcessed)} detail={t.metrics[0][1]}/><MetricCard label={t.metrics[1][0]} value={`${dashboard.deliveryRate.toFixed(2)}%`} detail={t.metrics[1][1]} accent/><MetricCard label={t.metrics[2][0]} value={`${formatNumber.format(dashboard.throughputPerSecond)}/s`} detail={`${formatNumber.format(activeVolume)} ${t.metrics[2][1]}`}/><MetricCard label={t.metrics[3][0]} value={`${dashboard.p95LatencyMs} ms`} detail={`${formatExact.format(dashboard.queueDepth)} ${t.metrics[3][1]}`}/></section>
+        <section className="metrics-grid"><MetricCard label={t.metrics[0][0]} value={formatNumber.format(dashboard.totalProcessed)} detail={t.metrics[0][1]} hint={t.tooltips.metrics[0]}/><MetricCard label={t.metrics[1][0]} value={`${dashboard.deliveryRate.toFixed(2)}%`} detail={t.metrics[1][1]} hint={t.tooltips.metrics[1]} accent/><MetricCard label={t.metrics[2][0]} value={`${formatNumber.format(dashboard.throughputPerSecond)}/s`} detail={`${formatNumber.format(activeVolume)} ${t.metrics[2][1]}`} hint={t.tooltips.metrics[2]}/><MetricCard label={t.metrics[3][0]} value={`${dashboard.p95LatencyMs} ms`} detail={`${formatExact.format(dashboard.queueDepth)} ${t.metrics[3][1]}`} hint={t.tooltips.metrics[3]}/></section>
 
-        <section className="panel performance"><div className="panel-heading"><div><span className="eyebrow">{t.liveTelemetry}</span><h2>{t.deliveryThroughput}</h2></div><div className="legend"><i/>{t.messagesPerSecond}</div></div><ThroughputChart values={dashboard.throughputHistory} label={t.chartLabel}/></section>
+        <section className="panel performance"><div className="panel-heading"><div><span className="eyebrow">{t.liveTelemetry}</span><HeadingWithHint hint={t.tooltips.telemetry}>{t.deliveryThroughput}</HeadingWithHint></div><div className="legend"><i/>{t.messagesPerSecond}</div></div><ThroughputChart values={dashboard.throughputHistory} label={t.chartLabel}/></section>
 
-        <section className="panel" id="pipelines"><div className="panel-heading"><div><span className="eyebrow">{t.orchestration}</span><h2>{t.campaignPipelines}</h2></div><span className="panel-meta">{dashboard.activeCampaigns} {t.active} / {dashboard.campaigns.length} {t.total}</span></div><CampaignTable campaigns={dashboard.campaigns} onAction={changeState} disabled={busy} language={language} t={t} formatNumber={formatNumber}/></section>
+        <section className="panel" id="pipelines"><div className="panel-heading"><div><span className="eyebrow">{t.orchestration}</span><HeadingWithHint hint={t.tooltips.pipelines}>{t.campaignPipelines}</HeadingWithHint></div><span className="panel-meta">{dashboard.activeCampaigns} {t.active} / {dashboard.campaigns.length} {t.total}</span></div><CampaignTable campaigns={dashboard.campaigns} onAction={changeState} disabled={busy} language={language} t={t} formatNumber={formatNumber}/></section>
 
         <section className="split-grid">
-          <article className="panel event-panel"><div className="panel-heading"><div><span className="eyebrow">{t.eventStream}</span><h2>{t.recentDeliveries}</h2></div><span className="live-pill"><i/>{t.live}</span></div><div className="events">{events.map(event => <div className="event" key={event.id}><span className={`event-icon ${event.status.toLowerCase()}`}>{event.status === 'Delivered' ? '✓' : '!'}</span><div><strong>{localizeCampaignText(event.campaign, language)}</strong><small>{event.channel} · {formatExact.format(event.batchSize)} {t.messages}</small></div><div className="event-meta"><strong>{event.latencyMs} ms</strong><small>{new Date(event.occurredAt).toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</small><span className="sr-only">{t.eventStatuses[event.status as keyof typeof t.eventStatuses] ?? event.status}</span></div></div>)}</div></article>
-          <article className="panel principles"><div className="panel-heading"><div><span className="eyebrow">{t.operatingPrinciples}</span><h2>{t.builtForChange}</h2></div></div>{t.principles.map(([title, description], index) => <div className="principle" key={title}><span>0{index + 1}</span><div><strong>{title}</strong><p>{description}</p></div></div>)}</article>
+          <article className="panel event-panel"><div className="panel-heading"><div><span className="eyebrow">{t.eventStream}</span><HeadingWithHint hint={t.tooltips.events}>{t.recentDeliveries}</HeadingWithHint></div><span className="live-pill"><i/>{t.live}</span></div><div className="events">{events.map(event => <div className="event" key={event.id}><span className={`event-icon ${event.status.toLowerCase()}`}>{event.status === 'Delivered' ? '✓' : '!'}</span><div><strong>{localizeCampaignText(event.campaign, language)}</strong><small>{event.channel} · {formatExact.format(event.batchSize)} {t.messages}</small></div><div className="event-meta"><strong>{event.latencyMs} ms</strong><small>{new Date(event.occurredAt).toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</small><span className="sr-only">{t.eventStatuses[event.status as keyof typeof t.eventStatuses] ?? event.status}</span></div></div>)}</div></article>
+          <article className="panel principles"><div className="panel-heading"><div><span className="eyebrow">{t.operatingPrinciples}</span><HeadingWithHint hint={t.tooltips.principles}>{t.builtForChange}</HeadingWithHint></div></div>{t.principles.map(([title, description], index) => <div className="principle" key={title}><span>0{index + 1}</span><div><strong>{title}</strong><p>{description}</p></div></div>)}</article>
         </section>
 
-        <section className="architecture-section" id="architecture"><div className="section-intro"><span className="eyebrow">{t.architectureLabel}</span><h2>{t.architectureLead}<br/><em>{t.architectureAccent}</em></h2><p>{t.architectureDescription}</p></div><div className="architecture-stack">{t.architectureRows.map(([layer, responsibility, technologies], index) => <div className="architecture-row" key={layer}><span className="layer-index">0{index + 1}</span><strong>{layer}</strong><span>{responsibility}</span><small>{technologies}</small></div>)}</div></section>
+        <section className="architecture-section" id="architecture"><div className="section-intro"><div className="eyebrow-line"><span className="eyebrow">{t.architectureLabel}</span><Hint label={t.architectureLabel} text={t.tooltips.architecture}/></div><h2>{t.architectureLead}<br/><em>{t.architectureAccent}</em></h2><p>{t.architectureDescription}</p></div><div className="architecture-stack">{t.architectureRows.map(([layer, responsibility, technologies], index) => <div className="architecture-row" key={layer}><span className="layer-index">0{index + 1}</span><strong>{layer}</strong><span>{responsibility}</span><small>{technologies}</small></div>)}</div></section>
 
-        <section className="career-section" id="engineering"><div className="section-intro"><span className="eyebrow">{t.proofLabel}</span><h2>{t.proofLead}<br/><em>{t.proofAccent}</em></h2><p>{t.proofDescription}</p></div><div className="career-list">{t.career.map(([period, role, company, signal]) => <article key={company}><span>{period}</span><div><h3>{role}</h3><strong>{company}</strong><p>{signal}</p></div></article>)}</div></section>
+        <section className="engineering-section" id="engineering">
+          <div className="section-intro"><div className="eyebrow-line"><span className="eyebrow">{t.proofLabel}</span><Hint label={t.proofLabel} text={t.tooltips.engineering}/></div><h2>{t.proofLead}<br/><em>{t.proofAccent}</em></h2><p>{t.proofDescription}</p></div>
+          <div className="decision-lab">
+            <div className="decision-tabs" role="tablist" aria-label={t.proofLabel}>{t.engineeringCases.map(([title, summary], index) => <button type="button" role="tab" id={`case-tab-${index}`} aria-controls={`case-panel-${index}`} aria-selected={activeCase === index} className={activeCase === index ? 'active' : ''} onClick={() => setActiveCase(index)} key={title}><span>0{index + 1}</span><div><strong>{title}</strong><small>{summary}</small></div><Icon name="arrow"/></button>)}</div>
+            {t.engineeringCases.map(([title, summary, challenge, decision, evidence], index) => activeCase === index && <article className="decision-panel" role="tabpanel" id={`case-panel-${index}`} aria-labelledby={`case-tab-${index}`} key={title}><span className="eyebrow">CASE / 0{index + 1}</span><h3>{title}</h3><p>{summary}</p><div className="case-grid">{[challenge, decision, evidence].map((value, itemIndex) => <div key={t.caseLabels[itemIndex]}><span>0{itemIndex + 1}</span><strong>{t.caseLabels[itemIndex]}</strong><p>{value}</p></div>)}</div></article>)}
+          </div>
+        </section>
+
+        <section className="about-section" id="about">
+          <div className="section-intro"><div className="eyebrow-line"><span className="eyebrow">{t.aboutLabel}</span><Hint label={t.aboutLabel} text={t.tooltips.about}/></div><h2>{t.aboutLead}<br/><em>{t.aboutAccent}</em></h2><p>{t.aboutDescription}</p><a className="button linkedin-button" href={`https://www.linkedin.com/in/rodrigo-ruza/?locale=${language}`} target="_blank" rel="noreferrer"><Icon name="linkedin"/>{t.linkedin}<Icon name="arrow"/></a></div>
+          <div><div className="about-stats">{t.aboutStats.map(([value, label]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><div className="career-list">{t.career.map(([period, role, company, signal]) => <article key={company}><span>{period}</span><div><h3>{role}</h3><strong>{company}</strong><p>{signal}</p></div></article>)}</div></div>
+        </section>
 
         <footer><div className="brand footer-brand"><span className="brand-mark">S<span>F</span></span><span>SignalForge<small>{t.footerCredit}</small></span></div><div><span>.NET 10 / C# 14</span><span>REACT / TYPESCRIPT</span><span>EVENT-DRIVEN</span></div></footer>
       </div>
