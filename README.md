@@ -1,10 +1,17 @@
 # SignalForge
 
+[![CI](https://github.com/Ruuuza/SignalForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Ruuuza/SignalForge/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Ruuuza/SignalForge/actions/workflows/codeql.yml/badge.svg)](https://github.com/Ruuuza/SignalForge/actions/workflows/codeql.yml)
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-7c5cff.svg)](LICENSE)
+
 **A production-minded campaign operations control plane built with .NET 10 LTS, C# 14, React 19, and TypeScript.**
 
 SignalForge turns high-volume journey delivery into an observable system. It is a compact but deep reference implementation of the engineering problems behind marketing automation: campaign lifecycle, asynchronous processing, real-time operational feedback, durable state, resilient interfaces, and disciplined architectural boundaries.
 
 > Designed and engineered by Rodrigo Alves Ruza as an executable demonstration of senior full-stack and solution architecture experience.
+
+![SignalForge campaign operations dashboard](docs/images/signalforge-dashboard.png)
 
 ## Why this project exists
 
