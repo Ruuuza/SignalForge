@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap');
 
-:root { font-family: 'Manrope', sans-serif; color: #f2f0f7; background: #08080b; font-synthesis: none; text-rendering: optimizeLegibility; }
+:root { font-family: 'Manrope', sans-serif; color: var(--text, #f2f0f7); background: var(--bg, #08080b); font-synthesis: none; text-rendering: optimizeLegibility; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; min-height: 100vh; background: #08080b; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg, #08080b); color: var(--text, #f2f0f7); transition: background-color .25s ease, color .25s ease; }
 button, input, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
