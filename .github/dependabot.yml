@@ -7,6 +7,9 @@ updates:
     groups:
       dotnet:
         patterns: ["*"]
+    ignore:
+      - dependency-name: Microsoft.OpenApi
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: /src/SignalForge.Web
     schedule:
