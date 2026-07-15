@@ -86,7 +86,8 @@ footer { min-height: 120px; display: flex; justify-content: space-between; align
 .language-control { position: relative; padding-left: 9px; }
 .language-control:hover, .theme-toggle:hover { border-color: #514664; color: var(--text); }
 .language-control .icon, .theme-toggle .icon { width: 14px; height: 14px; flex: 0 0 auto; }
-.language-control select { height: 100%; padding: 0 24px 0 0; border: 0; outline: 0; appearance: none; background: transparent; color: inherit; cursor: pointer; font: 500 9px var(--mono); letter-spacing: .06em; }
+.language-control select { height: 100%; padding: 0 24px 0 0; border: 0; outline: 0; appearance: none; background: transparent; color: #f2f0f7; color-scheme: dark; cursor: pointer; font: 500 9px var(--mono); letter-spacing: .06em; }
+.language-control select option { background: #15151b; color: #f2f0f7; }
 .language-control:after { content: ''; position: absolute; right: 9px; width: 5px; height: 5px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(45deg) translateY(-2px); pointer-events: none; }
 .theme-toggle { padding: 0 10px; cursor: pointer; font: 500 9px var(--mono); text-transform: uppercase; letter-spacing: .05em; }
 .core small { max-width: 76px; line-height: 1.25; }
@@ -100,6 +101,8 @@ footer { min-height: 120px; display: flex; justify-content: space-between; align
 :root[data-theme='light'] .sidebar nav a { color: #686370; }
 :root[data-theme='light'] .sidebar nav a:hover, :root[data-theme='light'] .sidebar nav a.active { color: #2d2838; background: linear-gradient(90deg, rgba(104,72,232,.11), transparent); }
 :root[data-theme='light'] .github-link, :root[data-theme='light'] .language-control, :root[data-theme='light'] .theme-toggle { color: #625d6b; }
+:root[data-theme='light'] .language-control select { color: #302b36; color-scheme: light; }
+:root[data-theme='light'] .language-control select option { background: #fff; color: #302b36; }
 :root[data-theme='light'] .github-link:hover, :root[data-theme='light'] .language-control:hover, :root[data-theme='light'] .theme-toggle:hover { color: #211f27; }
 :root[data-theme='light'] .hero-section:before { background-image: linear-gradient(rgba(36,31,45,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(36,31,45,.045) 1px, transparent 1px); }
 :root[data-theme='light'] h1, :root[data-theme='light'] h2, :root[data-theme='light'] h3, :root[data-theme='light'] .metric-card strong, :root[data-theme='light'] td strong, :root[data-theme='light'] .event strong, :root[data-theme='light'] .principle strong, :root[data-theme='light'] .architecture-row strong { color: #24212a; }
