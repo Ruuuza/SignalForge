@@ -1,0 +1,13 @@
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/TestResults
+.git
+.github
+.vs
+.idea
+data
+*.db
+*.log
+work

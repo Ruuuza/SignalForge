@@ -1,0 +1,42 @@
+# Build output
+**/bin/
+**/obj/
+**/TestResults/
+**/coverage/
+artifacts/
+
+# Frontend dependencies and output
+**/node_modules/
+**/dist/
+**/.vite/
+*.tsbuildinfo
+
+# Runtime data
+data/
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Tooling and IDEs
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.user
+*.suo
+*.cache
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini

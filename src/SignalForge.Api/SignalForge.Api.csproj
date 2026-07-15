@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\SignalForge.Web\dist\**" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\SignalForge.Web\dist')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SignalForge.Application\SignalForge.Application.csproj" />
+    <ProjectReference Include="..\SignalForge.Infrastructure\SignalForge.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
