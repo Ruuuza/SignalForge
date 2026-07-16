@@ -39,7 +39,7 @@ h1 em, .section-intro em { color: var(--violet-2); font-style: normal; }
 .orbit { position: absolute; border: 1px solid #292632; border-radius: 50%; }
 .orbit:before, .orbit:after { content: ''; position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 12px var(--violet); }
 .orbit-one { inset: 18px; animation: spin 18s linear infinite; }.orbit-one:before { left: -3px; top: 50%; margin-top: -3px; }.orbit-one:after { right: -3px; top: 50%; margin-top: -3px; }
-.orbit-two { inset: 56px; border-color: #3b3451; animation: spin 13s linear infinite reverse; }.orbit-two:before { left: 50%; top: -3px; margin-left: -3px; }.orbit-two:after { left: 50%; bottom: -3px; margin-left: -3px; background: var(--cyan); }
+.orbit-two { inset: 56px; border-color: #3b3451; animation: spin 13s linear infinite reverse; }.orbit-two:before { left: 50%; top: -3px; margin-left: -3px; }.orbit-two:after { left: 50%; bottom: -3px; margin-left: -3px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .core { width: 104px; height: 104px; display: grid; place-items: center; border: 1px solid #5d4d8d; background: radial-gradient(circle at 50% 40%, #2a2245, #101016 70%); box-shadow: 0 0 70px rgba(132,104,255,.2); transform: rotate(45deg); }
 .core-content { width: 88px; min-height: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; text-align: center; transform: rotate(-45deg); }.core span { font: 500 30px/1 var(--mono); }.core .core-ready { max-width: 74px; color: var(--violet-2); font: 600 13px/1.05 var(--mono); letter-spacing: -.04em; overflow-wrap: anywhere; }.core small { color: #a19aaa; font: 8px/1.35 var(--mono); letter-spacing: .04em; }

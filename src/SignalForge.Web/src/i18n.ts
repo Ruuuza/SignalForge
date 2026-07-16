@@ -10,9 +10,9 @@ export const translations = {
     demoSnapshot: 'Demo snapshot',
     stack: '.NET 10 LTS · React 19',
     portfolioLabel: 'Portfolio system / 01',
-    heroLead: 'Engineering the systems behind',
+    heroLead: 'Engineering systems for',
     heroAccent: 'meaningful customer moments.',
-    heroDescription: 'RUZO SOLUTIONS is a production-minded digital engineering studio. This campaign control plane demonstrates resilient delivery, thoughtful architecture, and full-stack product execution.',
+    heroDescription: 'RUZO SOLUTIONS demonstrates resilient delivery, deliberate architecture, and production-grade full-stack execution.',
     newJourney: 'Start new pipeline',
     exploreArchitecture: 'Explore architecture',
     livePipelines: 'Live pipelines',
@@ -122,7 +122,7 @@ export const translations = {
       dark: 'Dark mode',
     },
     tooltips: {
-      hero: 'A runnable portfolio system that connects product thinking, architecture, operations, and frontend craft.',
+      hero: 'Runnable proof of product thinking, architecture, operations, and frontend craft.',
       livePipelines: 'Campaigns currently processing messages. The value updates from the API snapshot.',
       metrics: [
         'Total messages handled across every campaign lifecycle.',
@@ -149,9 +149,9 @@ export const translations = {
     demoSnapshot: 'Amostra de demonstração',
     stack: '.NET 10 LTS · React 19',
     portfolioLabel: 'Sistema de portfólio / 01',
-    heroLead: 'Engenharia dos sistemas por trás de',
-    heroAccent: 'momentos relevantes para clientes.',
-    heroDescription: 'RUZO SOLUTIONS é um estúdio de engenharia digital orientado à produção. Este centro de controle demonstra entrega resiliente, arquitetura criteriosa e execução full-stack de produtos.',
+    heroLead: 'Engenharia de sistemas para',
+    heroAccent: 'momentos relevantes.',
+    heroDescription: 'A RUZO SOLUTIONS demonstra entrega resiliente, arquitetura criteriosa e execução full-stack pronta para produção.',
     newJourney: 'Iniciar novo pipeline',
     exploreArchitecture: 'Explorar arquitetura',
     livePipelines: 'Pipelines ativos',
@@ -261,7 +261,7 @@ export const translations = {
       dark: 'Modo escuro',
     },
     tooltips: {
-      hero: 'Um sistema de portfólio executável que conecta produto, arquitetura, operações e qualidade de frontend.',
+      hero: 'Prova executável de produto, arquitetura, operações e qualidade de frontend.',
       livePipelines: 'Campanhas processando mensagens neste momento. O valor é atualizado pela API.',
       metrics: [
         'Total de mensagens processadas em todos os ciclos de vida das campanhas.',
