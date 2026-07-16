@@ -9,8 +9,8 @@ type Theme = 'dark' | 'light'
 type Translation = (typeof translations)[Language]
 type IconName = 'grid' | 'pulse' | 'layers' | 'terminal' | 'user' | 'github' | 'linkedin' | 'plus' | 'arrow' | 'sun' | 'moon' | 'globe' | 'document' | 'download'
 
-const initialLanguage = (): Language => 'en-US'
-const initialTheme = (): Theme => 'light'
+const initialLanguage = (): Language => localStorage.getItem('ruzo-language') === 'pt-BR' ? 'pt-BR' : 'en-US'
+const initialTheme = (): Theme => localStorage.getItem('ruzo-theme') === 'dark' ? 'dark' : 'light'
 
 const Icon = ({ name }: { name: IconName }) => {
   const paths = {
@@ -160,11 +160,13 @@ function App() {
 
   useEffect(() => {
     document.documentElement.lang = language
+    localStorage.setItem('ruzo-language', language)
   }, [language])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
+    localStorage.setItem('ruzo-theme', theme)
   }, [theme])
 
   useEffect(() => {
