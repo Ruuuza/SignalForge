@@ -9,12 +9,8 @@ type Theme = 'dark' | 'light'
 type Translation = (typeof translations)[Language]
 type IconName = 'grid' | 'pulse' | 'layers' | 'terminal' | 'user' | 'github' | 'linkedin' | 'plus' | 'arrow' | 'sun' | 'moon' | 'globe' | 'document' | 'download'
 
-const initialLanguage = (): Language => localStorage.getItem('signalforge-language') === 'pt-BR' ? 'pt-BR' : 'en-US'
-const initialTheme = (): Theme => {
-  const saved = localStorage.getItem('signalforge-theme')
-  if (saved === 'light' || saved === 'dark') return saved
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
-}
+const initialLanguage = (): Language => 'en-US'
+const initialTheme = (): Theme => 'light'
 
 const Icon = ({ name }: { name: IconName }) => {
   const paths = {
@@ -164,14 +160,28 @@ function App() {
 
   useEffect(() => {
     document.documentElement.lang = language
-    localStorage.setItem('signalforge-language', language)
   }, [language])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
-    localStorage.setItem('signalforge-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    const closeLanguageMenu = (event: PointerEvent) => {
+      const menu = languageMenu.current
+      if (menu?.open && !menu.contains(event.target as Node)) menu.open = false
+    }
+    const closeLanguageMenuWithKeyboard = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && languageMenu.current) languageMenu.current.open = false
+    }
+    document.addEventListener('pointerdown', closeLanguageMenu)
+    document.addEventListener('keydown', closeLanguageMenuWithKeyboard)
+    return () => {
+      document.removeEventListener('pointerdown', closeLanguageMenu)
+      document.removeEventListener('keydown', closeLanguageMenuWithKeyboard)
+    }
+  }, [])
 
   const refresh = async () => {
     try {
@@ -246,7 +256,7 @@ function App() {
             </details>
             <button className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? t.preferences.light : t.preferences.dark} title={theme === 'dark' ? t.preferences.light : t.preferences.dark}><Icon name={theme === 'dark' ? 'sun' : 'moon'}/><span>{theme === 'dark' ? t.preferences.light : t.preferences.dark}</span></button>
           </div>
-          <div className="profile-links"><a className="github-link" href={linkedInUrl} target="_blank" rel="noreferrer" aria-label={t.linkedin}><Icon name="linkedin"/><span>LinkedIn</span></a><a className="github-link" href="https://github.com/Ruuuza/SignalForge" target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github"/><span>GitHub</span></a></div>
+          <div className="profile-links"><a className="external-link" href={linkedInUrl} target="_blank" rel="noreferrer" aria-label={t.linkedin}><Icon name="linkedin"/><span>LinkedIn</span></a><a className="external-link" href="https://github.com/Ruuuza/SignalForge" target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github"/><span>GitHub</span></a></div>
         </div>
       </header>
       <div className="content">
