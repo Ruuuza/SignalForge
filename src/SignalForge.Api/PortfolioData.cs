@@ -11,7 +11,7 @@ public static class PortfolioData
         [
             new("2022 - present", "Senior Developer", "Locaweb / Wake", "Marketing technology, campaign delivery, dynamic templates, and messaging at scale."),
             new("2016 - 2022", "Senior Developer", "Social Miner", "Scalable web products, APIs, microservices, observability, and legacy evolution."),
-            new("2013 - present", "Full-stack Consultant", "Code Solutions", "End-to-end product delivery, architecture standardization, integrations, and technical debt reduction.")
+            new("2013 - present", "Senior Full-stack Developer & Consultant", "Code Solutions", "Hands-on product delivery, integrations, modernization, and focused freelance development across industries.")
         ],
         [
             new("Experience", "Fast, accessible operational interface", ["React 19", "TypeScript", "Vite", "SignalR"]),

@@ -9,7 +9,7 @@
 
 RUZO SOLUTIONS turns high-volume journey delivery into an observable system. This repository contains its SignalForge reference implementation: a compact but deep demonstration of campaign lifecycle, asynchronous processing, real-time operational feedback, durable state, resilient interfaces, and disciplined architectural boundaries.
 
-> Designed and engineered by Rodrigo Alves Ruza as an executable demonstration of senior full-stack and solution architecture experience.
+> Designed and developed by Rodrigo Alves Ruza as an executable demonstration of senior full-stack delivery across projects of different scopes.
 
 ![SignalForge campaign operations dashboard](docs/images/signalforge-dashboard.png)
 
