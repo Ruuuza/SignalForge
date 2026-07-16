@@ -148,10 +148,19 @@ function App() {
   const [aboutTab, setAboutTab] = useState<'profile' | 'resume'>('profile')
   const [noticeKey, setNoticeKey] = useState<keyof Translation['notices'] | null>(null)
   const dashboardLoaded = useRef(false)
+  const languageMenu = useRef<HTMLDetailsElement>(null)
   const t = translations[language]
   const formatNumber = useMemo(() => new Intl.NumberFormat(language, { notation: 'compact', maximumFractionDigits: 1 }), [language])
   const formatExact = useMemo(() => new Intl.NumberFormat(language), [language])
   const resumePath = language === 'pt-BR' ? '/resumes/Rodrigo-Alves-Ruza-Curriculo-pt-BR.pdf' : '/resumes/Rodrigo-Alves-Ruza-Resume-en-US.pdf'
+  const linkedInUrl = language === 'pt-BR'
+    ? 'https://www.linkedin.com/in/rodrigo-ruza/?locale=pt-BR'
+    : 'https://www.linkedin.com/in/rodrigo-ruza/?locale=en-US'
+
+  const selectLanguage = (nextLanguage: Language) => {
+    setLanguage(nextLanguage)
+    if (languageMenu.current) languageMenu.current.open = false
+  }
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -228,10 +237,16 @@ function App() {
         <div><span className="mobile-brand">RS / </span><span className="environment">{t.environment}</span></div>
         <div className="topbar-actions">
           <div className="preferences">
-            <label className="language-control"><span className="sr-only">{t.preferences.language}</span><LocaleFlag language={language}/><select value={language} onChange={event => setLanguage(event.target.value as Language)} aria-label={t.preferences.language}><option value="en-US">EN-US</option><option value="pt-BR">PT-BR</option></select></label>
+            <details className="language-control" ref={languageMenu}>
+              <summary aria-label={t.preferences.language}><LocaleFlag language={language}/><span>{language}</span><i/></summary>
+              <div className="language-options" role="listbox" aria-label={t.preferences.language}>
+                <button type="button" role="option" aria-selected={language === 'en-US'} onClick={() => selectLanguage('en-US')}><LocaleFlag language="en-US"/><span><strong>English</strong><small>United States · EN-US</small></span></button>
+                <button type="button" role="option" aria-selected={language === 'pt-BR'} onClick={() => selectLanguage('pt-BR')}><LocaleFlag language="pt-BR"/><span><strong>Português</strong><small>Brasil · PT-BR</small></span></button>
+              </div>
+            </details>
             <button className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? t.preferences.light : t.preferences.dark} title={theme === 'dark' ? t.preferences.light : t.preferences.dark}><Icon name={theme === 'dark' ? 'sun' : 'moon'}/><span>{theme === 'dark' ? t.preferences.light : t.preferences.dark}</span></button>
           </div>
-          <div className="profile-links"><a className="github-link" href={`https://www.linkedin.com/in/rodrigo-ruza/?locale=${language}`} target="_blank" rel="noreferrer" aria-label={t.linkedin}><Icon name="linkedin"/><span>LinkedIn</span></a><a className="github-link" href="https://github.com/Ruuuza/SignalForge" target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github"/><span>GitHub</span></a></div>
+          <div className="profile-links"><a className="github-link" href={linkedInUrl} target="_blank" rel="noreferrer" aria-label={t.linkedin}><Icon name="linkedin"/><span>LinkedIn</span></a><a className="github-link" href="https://github.com/Ruuuza/SignalForge" target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github"/><span>GitHub</span></a></div>
         </div>
       </header>
       <div className="content">
