@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import { api, demoDashboard } from './api'
 import { localizeCampaignText, translations, type Language } from './i18n'
@@ -7,7 +7,7 @@ import './App.css'
 
 type Theme = 'dark' | 'light'
 type Translation = (typeof translations)[Language]
-type IconName = 'grid' | 'pulse' | 'layers' | 'terminal' | 'user' | 'github' | 'linkedin' | 'plus' | 'arrow' | 'sun' | 'moon' | 'globe'
+type IconName = 'grid' | 'pulse' | 'layers' | 'terminal' | 'user' | 'github' | 'linkedin' | 'plus' | 'arrow' | 'sun' | 'moon' | 'globe' | 'document' | 'download'
 
 const initialLanguage = (): Language => localStorage.getItem('signalforge-language') === 'pt-BR' ? 'pt-BR' : 'en-US'
 const initialTheme = (): Theme => {
@@ -30,9 +30,15 @@ const Icon = ({ name }: { name: IconName }) => {
     sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></>,
     moon: <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>,
     globe: <><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></>,
+    document: <><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 12h6M9 16h6"/></>,
+    download: <><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M5 20h14"/></>,
   }
   return <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>
 }
+
+const LocaleFlag = ({ language }: { language: Language }) => language === 'pt-BR'
+  ? <svg className="locale-flag" viewBox="0 0 24 16" aria-hidden="true"><rect width="24" height="16" rx="1" fill="#169b62"/><path d="M12 2.2 21 8l-9 5.8L3 8z" fill="#ffdf00"/><circle cx="12" cy="8" r="3.4" fill="#002776"/><path d="M9.3 7.5c1.8-.7 3.7-.4 5.4.7" fill="none" stroke="#fff" strokeWidth=".7"/></svg>
+  : <svg className="locale-flag" viewBox="0 0 24 16" aria-hidden="true"><rect width="24" height="16" rx="1" fill="#fff"/><path d="M0 0h24v2H0zm0 4h24v2H0zm0 4h24v2H0zm0 4h24v2H0z" fill="#b22234"/><rect width="10.5" height="8.6" rx=".5" fill="#3c3b6e"/><path d="m2 2 .4.8.9.1-.7.6.2.9-.8-.5-.8.5.2-.9-.7-.6.9-.1zm3.2 0 .4.8.9.1-.7.6.2.9-.8-.5-.8.5.2-.9-.7-.6.9-.1zm3.2 0 .4.8.9.1-.7.6.2.9-.8-.5-.8.5.2-.9-.7-.6.9-.1z" fill="#fff"/></svg>
 
 const Hint = ({ label, text }: { label: string; text: string }) => {
   const id = useId()
@@ -52,16 +58,33 @@ const MetricCard = ({ label, value, detail, hint, accent }: { label: string; val
   </article>
 )
 
-const ThroughputChart = ({ values, label }: { values: number[]; label: string }) => {
+type ThroughputChartProps = {
+  values: number[]
+  label: string
+  emptyTitle: string
+  emptyDescription: string
+  currentLabel: string
+  formatNumber: Intl.NumberFormat
+}
+
+const ThroughputChart = ({ values, label, emptyTitle, emptyDescription, currentLabel, formatNumber }: ThroughputChartProps) => {
+  const hasData = values.some(value => value > 0)
   const max = Math.max(...values, 1)
-  const points = values.map((value, index) => `${(index / (values.length - 1)) * 100},${45 - (value / max) * 40}`).join(' ')
-  return <div className="chart-wrap">
-    <div className="chart-grid"><span>6k</span><span>4k</span><span>2k</span></div>
-    <svg className="chart" viewBox="0 0 100 50" preserveAspectRatio="none" role="img" aria-label={label}>
-      <defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7c5cff" stopOpacity=".45"/><stop offset="1" stopColor="#7c5cff" stopOpacity="0"/></linearGradient></defs>
-      <polygon points={`0,48 ${points} 100,48`} fill="url(#chartFill)"/>
-      <polyline points={points} fill="none" stroke="var(--violet-2)" strokeWidth="1.2" vectorEffect="non-scaling-stroke"/>
-    </svg>
+  const scaleMax = hasData ? Math.max(1000, Math.ceil(max / 1000) * 1000) : 6000
+  const points = values.map((value, index) => `${(index / Math.max(values.length - 1, 1)) * 100},${45 - (value / scaleMax) * 40}`).join(' ')
+  const lastValue = values.at(-1) ?? 0
+  const lastY = 45 - (lastValue / scaleMax) * 40
+  const chartKey = values.join('-')
+
+  return <div className={`chart-wrap ${hasData ? 'has-data' : 'is-empty'}`}>
+    <div className="chart-grid"><span>{formatNumber.format(scaleMax)}</span><span>{formatNumber.format(Math.round(scaleMax * .66))}</span><span>{formatNumber.format(Math.round(scaleMax * .33))}</span></div>
+    {hasData ? <>
+      <div className="chart-current"><span>{currentLabel}</span><strong>{formatNumber.format(lastValue)}/s</strong></div>
+      <svg className="chart" viewBox="0 0 100 50" preserveAspectRatio="none" role="img" aria-label={label}>
+        <defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7c5cff" stopOpacity=".45"/><stop offset="1" stopColor="#7c5cff" stopOpacity="0"/></linearGradient></defs>
+        <g key={chartKey} className="chart-series"><polygon points={`0,48 ${points} 100,48`} fill="url(#chartFill)"/><polyline className="chart-line" points={points} fill="none" stroke="var(--violet-2)" strokeWidth="1.2" vectorEffect="non-scaling-stroke"/><circle className="chart-pulse" cx="100" cy={lastY} r="1.5" fill="var(--violet-2)"/></g>
+      </svg>
+    </> : <div className="chart-empty"><span className="chart-empty-icon"><Icon name="pulse"/></span><div><strong>{emptyTitle}</strong><p>{emptyDescription}</p></div></div>}
   </div>
 }
 
@@ -80,12 +103,12 @@ const CampaignTable = ({ campaigns, onAction, disabled, language, t, formatNumbe
     <tbody>{campaigns.map(campaign => {
       const progress = Math.min(100, campaign.processed / campaign.targetVolume * 100)
       return <tr key={campaign.id}>
-        <td><strong>{localizeCampaignText(campaign.name, language)}</strong><small>{localizeCampaignText(campaign.audience, language)}</small></td>
-        <td><span className="channel">{campaign.channel}</span></td>
-        <td><div className="progress-copy"><span>{formatNumber.format(campaign.processed)}</span><span>{Math.round(progress)}%</span></div><div className="progress"><i style={{ width: `${progress}%` }}/></div></td>
-        <td>{campaign.deliveryRate ? `${campaign.deliveryRate.toFixed(2)}%` : '—'}</td>
-        <td><span className={`status ${campaign.status.toLowerCase()}`}><i/>{t.statuses[campaign.status]}</span></td>
-        <td><button className="table-action" disabled={disabled || campaign.status === 'Completed'} onClick={() => onAction(campaign)}>{campaign.status === 'Live' ? t.actions.pause : t.actions.launch}</button></td>
+        <td data-label={t.table[0]}><strong>{localizeCampaignText(campaign.name, language)}</strong><small>{localizeCampaignText(campaign.audience, language)}</small></td>
+        <td data-label={t.table[1]}><span className="channel">{campaign.channel}</span></td>
+        <td data-label={t.table[2]}><div className="progress-copy"><span>{formatNumber.format(campaign.processed)}</span><span>{Math.round(progress)}%</span></div><div className="progress"><i style={{ width: `${progress}%` }}/></div></td>
+        <td data-label={t.table[3]}>{campaign.deliveryRate ? `${campaign.deliveryRate.toFixed(2)}%` : '—'}</td>
+        <td data-label={t.table[4]}><span className={`status ${campaign.status.toLowerCase()}`}><i/>{t.statuses[campaign.status]}</span></td>
+        <td data-label={t.table[5]}><button className="table-action" disabled={disabled || campaign.status === 'Completed'} onClick={() => onAction(campaign)}>{campaign.status === 'Live' ? t.actions.pause : t.actions.launch}</button></td>
       </tr>
     })}</tbody>
   </table></div>
@@ -122,10 +145,13 @@ function App() {
   const [busy, setBusy] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeCase, setActiveCase] = useState(0)
+  const [aboutTab, setAboutTab] = useState<'profile' | 'resume'>('profile')
   const [noticeKey, setNoticeKey] = useState<keyof Translation['notices'] | null>(null)
+  const dashboardLoaded = useRef(false)
   const t = translations[language]
   const formatNumber = useMemo(() => new Intl.NumberFormat(language, { notation: 'compact', maximumFractionDigits: 1 }), [language])
   const formatExact = useMemo(() => new Intl.NumberFormat(language), [language])
+  const resumePath = language === 'pt-BR' ? '/resumes/Rodrigo-Alves-Ruza-Curriculo-pt-BR.pdf' : '/resumes/Rodrigo-Alves-Ruza-Resume-en-US.pdf'
 
   useEffect(() => {
     document.documentElement.lang = language
@@ -139,7 +165,17 @@ function App() {
   }, [theme])
 
   const refresh = async () => {
-    try { setDashboard(await api.dashboard()); setConnected(true) }
+    try {
+      const snapshot = await api.dashboard()
+      setDashboard(current => {
+        if (!dashboardLoaded.current) {
+          dashboardLoaded.current = true
+          return snapshot
+        }
+        return { ...snapshot, throughputHistory: [...current.throughputHistory.slice(-19), snapshot.throughputPerSecond] }
+      })
+      setConnected(true)
+    }
     catch { setConnected(false) }
   }
 
@@ -170,35 +206,41 @@ function App() {
 
   const createCampaign = async (campaign: CreateCampaign) => {
     if (!connected) { setNoticeKey('createDemo'); return }
-    try { await api.createCampaign(campaign); setModalOpen(false); await refresh() }
+    try {
+      const created = await api.createCampaign(campaign)
+      await api.changeCampaignState(created.id, 'launch')
+      setModalOpen(false)
+      await refresh()
+      setNoticeKey('simulationStarted')
+    }
     catch { setNoticeKey('createFailed') }
   }
 
   return <div className="app-shell">
     <aside className="sidebar">
-      <a className="brand" href="#overview"><span className="brand-mark">S<span>F</span></span><span>SignalForge<small>OPERATIONS CONTROL</small></span></a>
+      <a className="brand" href="#overview"><span className="brand-mark">R<span>S</span></span><span>RUZO SOLUTIONS<small>{t.brandSubtitle}</small></span></a>
       <nav>{(['grid', 'pulse', 'layers', 'terminal', 'user'] as IconName[]).map((icon, index) => <a className={index === 0 ? 'active' : ''} href={['#overview', '#pipelines', '#architecture', '#engineering', '#about'][index]} key={t.nav[index]}><Icon name={icon}/>{t.nav[index]}</a>)}</nav>
       <div className="sidebar-foot"><span className={`connection ${connected ? 'online' : ''}`}><i/>{connected ? t.apiConnected : t.demoSnapshot}</span><small>{t.stack}</small></div>
     </aside>
 
     <main>
       <header className="topbar">
-        <div><span className="mobile-brand">SF / </span><span className="environment">{t.environment}</span></div>
+        <div><span className="mobile-brand">RS / </span><span className="environment">{t.environment}</span></div>
         <div className="topbar-actions">
           <div className="preferences">
-            <label className="language-control"><span className="sr-only">{t.preferences.language}</span><Icon name="globe"/><select value={language} onChange={event => setLanguage(event.target.value as Language)} aria-label={t.preferences.language}><option value="en-US">EN-US</option><option value="pt-BR">PT-BR</option></select></label>
+            <label className="language-control"><span className="sr-only">{t.preferences.language}</span><LocaleFlag language={language}/><select value={language} onChange={event => setLanguage(event.target.value as Language)} aria-label={t.preferences.language}><option value="en-US">EN-US</option><option value="pt-BR">PT-BR</option></select></label>
             <button className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? t.preferences.light : t.preferences.dark} title={theme === 'dark' ? t.preferences.light : t.preferences.dark}><Icon name={theme === 'dark' ? 'sun' : 'moon'}/><span>{theme === 'dark' ? t.preferences.light : t.preferences.dark}</span></button>
           </div>
-          <a className="github-link" href="https://github.com/Ruuuza/SignalForge" target="_blank" rel="noreferrer"><Icon name="github"/><span>github.com/Ruuuza</span></a>
+          <div className="profile-links"><a className="github-link" href={`https://www.linkedin.com/in/rodrigo-ruza/?locale=${language}`} target="_blank" rel="noreferrer" aria-label={t.linkedin}><Icon name="linkedin"/><span>LinkedIn</span></a><a className="github-link" href="https://github.com/Ruuuza/SignalForge" target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github"/><span>GitHub</span></a></div>
         </div>
       </header>
       <div className="content">
         {noticeKey && <div className="notice" role="status"><span>{t.notices[noticeKey]}</span><button onClick={() => setNoticeKey(null)} aria-label={t.modal.close}>×</button></div>}
-        <section className="hero-section" id="overview"><div><div className="eyebrow-line"><span className="eyebrow">{t.portfolioLabel}</span><Hint label={t.portfolioLabel} text={t.tooltips.hero}/></div><h1>{t.heroLead} <em>{t.heroAccent}</em></h1><p>{t.heroDescription}</p><div className="hero-actions"><button className="button primary" onClick={() => setModalOpen(true)}><Icon name="plus"/>{t.newJourney}</button><a className="button ghost" href="#architecture">{t.exploreArchitecture}<Icon name="arrow"/></a></div></div><div className="hero-orbit"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="core" tabIndex={0} title={t.tooltips.livePipelines} aria-label={`${dashboard.activeCampaigns} ${t.livePipelines}. ${t.tooltips.livePipelines}`}><div className="core-content"><span>{dashboard.activeCampaigns}</span><small>{t.livePipelines}</small></div></div><span className="node n1">API</span><span className="node n2">EVENTS</span><span className="node n3">DATA</span></div></section>
+        <section className="hero-section" id="overview"><div><div className="eyebrow-line"><span className="eyebrow">{t.portfolioLabel}</span><Hint label={t.portfolioLabel} text={t.tooltips.hero}/></div><h1>{t.heroLead} <em>{t.heroAccent}</em></h1><p>{t.heroDescription}</p><div className="hero-actions"><button className="button primary" onClick={() => setModalOpen(true)}><Icon name="plus"/>{t.newJourney}</button><a className="button ghost" href="#architecture">{t.exploreArchitecture}<Icon name="arrow"/></a></div></div><div className="hero-orbit"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className={`core ${dashboard.activeCampaigns ? 'is-live' : 'is-idle'}`} tabIndex={0} title={t.tooltips.livePipelines} aria-label={dashboard.activeCampaigns ? `${dashboard.activeCampaigns} ${t.simulation.liveLabel}. ${t.tooltips.livePipelines}` : `${t.simulation.idleTitle}. ${t.simulation.idleLabel}`}><div className="core-content">{dashboard.activeCampaigns ? <><span>{dashboard.activeCampaigns}</span><small>{t.simulation.liveLabel}</small></> : <><span className="core-ready">{t.simulation.idleTitle}</span><small>{t.simulation.idleLabel}</small></>}</div></div><span className="node n1">API</span><span className="node n2">EVENTS</span><span className="node n3">DATA</span></div></section>
 
         <section className="metrics-grid"><MetricCard label={t.metrics[0][0]} value={formatNumber.format(dashboard.totalProcessed)} detail={t.metrics[0][1]} hint={t.tooltips.metrics[0]}/><MetricCard label={t.metrics[1][0]} value={`${dashboard.deliveryRate.toFixed(2)}%`} detail={t.metrics[1][1]} hint={t.tooltips.metrics[1]} accent/><MetricCard label={t.metrics[2][0]} value={`${formatNumber.format(dashboard.throughputPerSecond)}/s`} detail={`${formatNumber.format(activeVolume)} ${t.metrics[2][1]}`} hint={t.tooltips.metrics[2]}/><MetricCard label={t.metrics[3][0]} value={`${dashboard.p95LatencyMs} ms`} detail={`${formatExact.format(dashboard.queueDepth)} ${t.metrics[3][1]}`} hint={t.tooltips.metrics[3]}/></section>
 
-        <section className="panel performance"><div className="panel-heading"><div><span className="eyebrow">{t.liveTelemetry}</span><HeadingWithHint hint={t.tooltips.telemetry}>{t.deliveryThroughput}</HeadingWithHint></div><div className="legend"><i/>{t.messagesPerSecond}</div></div><ThroughputChart values={dashboard.throughputHistory} label={t.chartLabel}/></section>
+        <section className="panel performance"><div className="panel-heading"><div><span className="eyebrow">{t.liveTelemetry}</span><HeadingWithHint hint={t.tooltips.telemetry}>{t.deliveryThroughput}</HeadingWithHint></div><div className="legend"><i/>{t.messagesPerSecond}</div></div><ThroughputChart values={dashboard.throughputHistory} label={t.chartLabel} emptyTitle={t.simulation.telemetryIdleTitle} emptyDescription={t.simulation.telemetryIdleDescription} currentLabel={t.simulation.currentThroughput} formatNumber={formatNumber}/></section>
 
         <section className="panel" id="pipelines"><div className="panel-heading"><div><span className="eyebrow">{t.orchestration}</span><HeadingWithHint hint={t.tooltips.pipelines}>{t.campaignPipelines}</HeadingWithHint></div><span className="panel-meta">{dashboard.activeCampaigns} {t.active} / {dashboard.campaigns.length} {t.total}</span></div><CampaignTable campaigns={dashboard.campaigns} onAction={changeState} disabled={busy} language={language} t={t} formatNumber={formatNumber}/></section>
 
@@ -218,11 +260,11 @@ function App() {
         </section>
 
         <section className="about-section" id="about">
-          <div className="section-intro"><div className="eyebrow-line"><span className="eyebrow">{t.aboutLabel}</span><Hint label={t.aboutLabel} text={t.tooltips.about}/></div><h2>{t.aboutLead}<br/><em>{t.aboutAccent}</em></h2><p>{t.aboutDescription}</p><a className="button linkedin-button" href={`https://www.linkedin.com/in/rodrigo-ruza/?locale=${language}`} target="_blank" rel="noreferrer"><Icon name="linkedin"/>{t.linkedin}<Icon name="arrow"/></a></div>
-          <div><div className="about-stats">{t.aboutStats.map(([value, label]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><div className="career-list">{t.career.map(([period, role, company, signal]) => <article key={company}><span>{period}</span><div><h3>{role}</h3><strong>{company}</strong><p>{signal}</p></div></article>)}</div></div>
+          <div className="section-intro"><div className="eyebrow-line"><span className="eyebrow">{t.aboutLabel}</span><Hint label={t.aboutLabel} text={t.tooltips.about}/></div><h2>{t.aboutLead}<br/><em>{t.aboutAccent}</em></h2><p>{t.aboutDescription}</p><div className="about-tabs" role="tablist" aria-label={t.aboutLabel}><button type="button" role="tab" aria-selected={aboutTab === 'profile'} className={aboutTab === 'profile' ? 'active' : ''} onClick={() => setAboutTab('profile')}>{t.aboutTabs.profile}</button><button type="button" role="tab" aria-selected={aboutTab === 'resume'} className={aboutTab === 'resume' ? 'active' : ''} onClick={() => setAboutTab('resume')}>{t.aboutTabs.resume}</button></div></div>
+          {aboutTab === 'profile' ? <div role="tabpanel"><div className="about-stats">{t.aboutStats.map(([value, label]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><div className="career-list">{t.career.map(([period, role, company, signal]) => <article key={company}><span>{period}</span><div><h3>{role}</h3><strong>{company}</strong><p>{signal}</p></div></article>)}</div></div> : <article className="resume-panel" role="tabpanel"><div className="resume-copy"><span className="resume-icon"><Icon name="document"/></span><div><span className="eyebrow">PDF / 2025</span><h3>{t.aboutTabs.resumeTitle}</h3><p>{t.aboutTabs.resumeDescription}</p><small>{t.aboutTabs.resumeMeta}</small></div><div className="resume-actions"><a className="button ghost" href={resumePath} target="_blank" rel="noreferrer">{t.aboutTabs.view}<Icon name="arrow"/></a><a className="button primary" href={resumePath} download><Icon name="download"/>{t.aboutTabs.download}</a></div></div><iframe className="resume-preview" src={`${resumePath}#view=FitH&toolbar=0`} title={t.aboutTabs.resumeTitle}/></article>}
         </section>
 
-        <footer><div className="brand footer-brand"><span className="brand-mark">S<span>F</span></span><span>SignalForge<small>{t.footerCredit}</small></span></div><div><span>.NET 10 / C# 14</span><span>REACT / TYPESCRIPT</span><span>EVENT-DRIVEN</span></div></footer>
+        <footer><div className="brand footer-brand"><span className="brand-mark">R<span>S</span></span><span>RUZO SOLUTIONS<small>{t.footerCredit}</small></span></div><div><span>.NET 10 / C# 14</span><span>REACT / TYPESCRIPT</span><span>EVENT-DRIVEN</span></div></footer>
       </div>
     </main>
     <CreateCampaignPanel open={modalOpen} onClose={() => setModalOpen(false)} onCreate={createCampaign} t={t}/>

@@ -5,7 +5,7 @@ namespace SignalForge.Api;
 public static class PortfolioData
 {
     public static PortfolioProfile Create() => new(
-        "SignalForge",
+        "RUZO SOLUTIONS",
         "Operate high-volume, personalized customer journeys with observable and resilient delivery pipelines.",
         ["Modular architecture", "Real-time operations", "Asynchronous processing", "Operational resilience", "Cloud-ready delivery", "Automated quality gates"],
         [

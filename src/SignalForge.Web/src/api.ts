@@ -1,4 +1,4 @@
-import type { CreateCampaign, Dashboard } from './types'
+import type { Campaign, CreateCampaign, Dashboard } from './types'
 
 const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
   const response = await fetch(path, {
@@ -17,7 +17,7 @@ const request = async <T>(path: string, init?: RequestInit): Promise<T> => {
 export const api = {
   dashboard: () => request<Dashboard>('/api/dashboard'),
   createCampaign: (campaign: CreateCampaign) =>
-    request('/api/campaigns', { method: 'POST', body: JSON.stringify(campaign) }),
+    request<Campaign>('/api/campaigns', { method: 'POST', body: JSON.stringify(campaign) }),
   changeCampaignState: (id: string, action: 'launch' | 'pause') =>
     request(`/api/campaigns/${id}/${action}`, { method: 'POST' }),
 }
