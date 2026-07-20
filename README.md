@@ -64,6 +64,17 @@ docker compose up --build
 
 Open [http://localhost:8080](http://localhost:8080). Data is retained in the named `ruzo-solutions-data` volume.
 
+### Railway
+
+The repository includes `railway.json` for Docker-based deployment with the `/health` readiness probe and an always-on restart policy. Configure one service from this repository with:
+
+- a volume mounted at `/app/data`;
+- `ASPNETCORE_ENVIRONMENT=Production`;
+- `ConnectionStrings__RuzoSolutions=Data Source=/app/data/ruzo-solutions.db`;
+- `RAILWAY_RUN_UID=0`, required because Railway mounts volumes as root while the image normally runs as a non-root user.
+
+Generate a public domain after the first healthy deployment. The same origin serves the React application, REST API, SignalR hub, and static assets, so no cross-origin configuration is required.
+
 ### Local development
 
 Requirements: .NET SDK 10 and Node.js 24 with pnpm 10.
