@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\RuzoSolutions.Web\dist\**" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\RuzoSolutions.Web\dist')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RuzoSolutions.Application\RuzoSolutions.Application.csproj" />
+    <ProjectReference Include="..\RuzoSolutions.Infrastructure\RuzoSolutions.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -11,7 +11,7 @@ updates:
       - dependency-name: Microsoft.OpenApi
         update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
-    directory: /src/SignalForge.Web
+    directory: /src/RuzoSolutions.Web
     schedule:
       interval: weekly
     groups:

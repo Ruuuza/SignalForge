@@ -6,9 +6,9 @@
 dotnet restore
 dotnet build --configuration Release --no-restore
 dotnet test --configuration Release --no-build
-pnpm --dir src/SignalForge.Web install
-pnpm --dir src/SignalForge.Web lint
-pnpm --dir src/SignalForge.Web build
+pnpm --dir src/RuzoSolutions.Web install
+pnpm --dir src/RuzoSolutions.Web lint
+pnpm --dir src/RuzoSolutions.Web build
 ```
 
 Use focused commits, add tests for behavior changes, and record significant architectural decisions under `docs/adr`.
