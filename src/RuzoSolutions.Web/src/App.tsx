@@ -133,7 +133,6 @@ function App() {
   const [busy, setBusy] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [activeArchitecture, setActiveArchitecture] = useState(0)
-  const [resumeLanguage, setResumeLanguage] = useState<Language>(language)
   const [noticeKey, setNoticeKey] = useState<keyof Translation['notices'] | null>(null)
   const t = translations[language]
   const formatNumber = useMemo(() => new Intl.NumberFormat(language, { notation: 'compact', maximumFractionDigits: 1 }), [language])
@@ -142,7 +141,6 @@ function App() {
   useEffect(() => {
     document.documentElement.lang = language
     localStorage.setItem('ruzo-solutions-language', language)
-    setResumeLanguage(language)
   }, [language])
 
   useEffect(() => {
@@ -229,7 +227,7 @@ function App() {
 
         <section className="about-section" id="about">
           <div className="section-intro"><div className="eyebrow-line"><span className="eyebrow">{t.aboutLabel}</span><Hint label={t.aboutLabel} text={t.tooltips.about}/></div><h2>{t.aboutLead}<br/><em>{t.aboutAccent}</em></h2><p>{t.aboutDescription}</p><ul className="about-highlights">{t.aboutHighlights.map(item => <li key={item}>{item}</li>)}</ul><div className="education"><span>{t.education[0]}</span><small>{t.education[1]}</small></div><a className="button linkedin-button" href={LINKEDIN_URL} target="_blank" rel="noreferrer"><Icon name="linkedin"/>{t.linkedin}<Icon name="arrow"/></a></div>
-          <div className="about-content"><div className="about-stats">{t.aboutStats.map(([value, label]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><div className="career-list">{t.career.map(([period, role, company, signal]) => <article key={company}><span>{period}</span><div><h3>{role}</h3><strong>{company}</strong><p>{signal}</p></div></article>)}</div><section className="resume-panel"><div><span className="eyebrow">{t.resume.label}</span><h3>{t.resume.title}</h3><p>{t.resume.description}</p></div><div><div className="resume-tabs" role="tablist" aria-label={t.resume.label}><button type="button" role="tab" aria-selected={resumeLanguage === 'pt-BR'} className={resumeLanguage === 'pt-BR' ? 'active' : ''} onClick={() => setResumeLanguage('pt-BR')}>PT-BR <small>{t.resume.portuguese}</small></button><button type="button" role="tab" aria-selected={resumeLanguage === 'en-US'} className={resumeLanguage === 'en-US' ? 'active' : ''} onClick={() => setResumeLanguage('en-US')}>EN-US <small>{t.resume.english}</small></button></div><div className="resume-actions" role="tabpanel"><a className="button primary" href={resumeDocuments[resumeLanguage]} target="_blank" rel="noreferrer">{t.resume.view}<Icon name="arrow"/></a><a className="button ghost" href={resumeDocuments[resumeLanguage]} download>{t.resume.download}</a></div></div></section></div>
+          <div className="about-content"><div className="about-stats">{t.aboutStats.map(([value, label]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</div><div className="career-list">{t.career.map(([period, role, company, signal]) => <article key={company}><span>{period}</span><div><h3>{role}</h3><strong>{company}</strong><p>{signal}</p></div></article>)}</div><section className="resume-panel"><div><span className="eyebrow">{t.resume.label}</span><h3>{t.resume.title}</h3><p>{t.resume.description}</p></div><div className="resume-document"><span className="resume-language">{language}<small>{language === 'pt-BR' ? t.resume.portuguese : t.resume.english}</small></span><div className="resume-actions"><a className="button primary" href={resumeDocuments[language]} target="_blank" rel="noreferrer">{t.resume.view}<Icon name="arrow"/></a><a className="button ghost" href={resumeDocuments[language]} download>{t.resume.download}</a></div></div></section></div>
         </section>
 
         <footer><div className="brand footer-brand"><span className="brand-mark">R<span>S</span></span><span>Ruzo Solutions<small>{t.footerCredit}</small></span></div><div><span>.NET 10 / C# 14</span><span>REACT / TYPESCRIPT</span><span>EVENT-DRIVEN</span></div></footer>
