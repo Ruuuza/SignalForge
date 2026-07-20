@@ -17,9 +17,9 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
-      - run: dotnet restore SignalForge.sln
-      - run: dotnet build SignalForge.sln --configuration Release --no-restore
-      - run: dotnet test SignalForge.sln --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory TestResults
+      - run: dotnet restore RuzoSolutions.sln
+      - run: dotnet build RuzoSolutions.sln --configuration Release --no-restore
+      - run: dotnet test RuzoSolutions.sln --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory TestResults
       - uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/SignalForge.Web
+        working-directory: src/RuzoSolutions.Web
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v6
@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          cache-dependency-path: src/SignalForge.Web/pnpm-lock.yaml
+          cache-dependency-path: src/RuzoSolutions.Web/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
@@ -56,6 +56,6 @@ jobs:
         with:
           context: .
           push: false
-          tags: signalforge:ci
+          tags: ruzo-solutions:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max

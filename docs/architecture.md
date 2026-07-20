@@ -1,6 +1,6 @@
 # Architecture
 
-SignalForge uses a modular monolith because it offers the best local developer experience without sacrificing boundaries. The runtime is one deployable unit; the code remains organized around stable dependency direction.
+Ruzo Solutions uses a modular monolith because it offers the best local developer experience without sacrificing boundaries. The runtime is one deployable unit; the code remains organized around stable dependency direction.
 
 ```mermaid
 flowchart LR

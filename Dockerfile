@@ -1,21 +1,21 @@
 FROM node:24-alpine AS web-build
 WORKDIR /src/web
 RUN npm install --global pnpm@10.14.0
-COPY src/SignalForge.Web/package.json src/SignalForge.Web/pnpm-lock.yaml ./
+COPY src/RuzoSolutions.Web/package.json src/RuzoSolutions.Web/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY src/SignalForge.Web/ ./
+COPY src/RuzoSolutions.Web/ ./
 RUN pnpm build
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS api-build
 WORKDIR /src
-COPY SignalForge.sln Directory.Build.props global.json ./
-COPY src/SignalForge.Domain/SignalForge.Domain.csproj src/SignalForge.Domain/
-COPY src/SignalForge.Application/SignalForge.Application.csproj src/SignalForge.Application/
-COPY src/SignalForge.Infrastructure/SignalForge.Infrastructure.csproj src/SignalForge.Infrastructure/
-COPY src/SignalForge.Api/SignalForge.Api.csproj src/SignalForge.Api/
-RUN dotnet restore src/SignalForge.Api/SignalForge.Api.csproj
+COPY RuzoSolutions.sln Directory.Build.props global.json ./
+COPY src/RuzoSolutions.Domain/RuzoSolutions.Domain.csproj src/RuzoSolutions.Domain/
+COPY src/RuzoSolutions.Application/RuzoSolutions.Application.csproj src/RuzoSolutions.Application/
+COPY src/RuzoSolutions.Infrastructure/RuzoSolutions.Infrastructure.csproj src/RuzoSolutions.Infrastructure/
+COPY src/RuzoSolutions.Api/RuzoSolutions.Api.csproj src/RuzoSolutions.Api/
+RUN dotnet restore src/RuzoSolutions.Api/RuzoSolutions.Api.csproj
 COPY src/ ./src/
-RUN dotnet publish src/SignalForge.Api/SignalForge.Api.csproj --configuration Release --no-restore --output /app/publish
+RUN dotnet publish src/RuzoSolutions.Api/RuzoSolutions.Api.csproj --configuration Release --no-restore --output /app/publish
 COPY --from=web-build /src/web/dist /app/publish/wwwroot
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
@@ -27,4 +27,4 @@ USER app
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 HEALTHCHECK --interval=20s --timeout=3s --start-period=10s --retries=3 CMD curl --fail http://localhost:8080/health || exit 1
-ENTRYPOINT ["dotnet", "SignalForge.Api.dll"]
+ENTRYPOINT ["dotnet", "RuzoSolutions.Api.dll"]

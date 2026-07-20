@@ -1,16 +1,16 @@
 services:
-  signalforge:
+  ruzo-solutions:
     build:
       context: .
-    image: signalforge:local
+    image: ruzo-solutions:local
     ports:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__SignalForge: Data Source=/app/data/signalforge.db
+      ConnectionStrings__RuzoSolutions: Data Source=/app/data/ruzo-solutions.db
     volumes:
-      - signalforge-data:/app/data
+      - ruzo-solutions-data:/app/data
     restart: unless-stopped
 
 volumes:
-  signalforge-data:
+  ruzo-solutions-data:

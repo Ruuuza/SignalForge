@@ -1,17 +1,17 @@
-# SignalForge
+# Ruzo Solutions
 
-[![CI](https://github.com/Ruuuza/SignalForge/actions/workflows/ci.yml/badge.svg)](https://github.com/Ruuuza/SignalForge/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/Ruuuza/SignalForge/actions/workflows/codeql.yml/badge.svg)](https://github.com/Ruuuza/SignalForge/actions/workflows/codeql.yml)
+[![CI](https://github.com/Ruuuza/Ruzo-Solutions/actions/workflows/ci.yml/badge.svg)](https://github.com/Ruuuza/Ruzo-Solutions/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Ruuuza/Ruzo-Solutions/actions/workflows/codeql.yml/badge.svg)](https://github.com/Ruuuza/Ruzo-Solutions/actions/workflows/codeql.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-7c5cff.svg)](LICENSE)
 
 **A production-minded campaign operations control plane built with .NET 10 LTS, C# 14, React 19, and TypeScript.**
 
-SignalForge turns high-volume journey delivery into an observable system. It is a compact but deep reference implementation of the engineering problems behind marketing automation: campaign lifecycle, asynchronous processing, real-time operational feedback, durable state, resilient interfaces, and disciplined architectural boundaries.
+Ruzo Solutions turns high-volume journey delivery into an observable system. It is a compact but deep reference implementation of the engineering problems behind marketing automation: campaign lifecycle, asynchronous processing, real-time operational feedback, durable state, resilient interfaces, and disciplined architectural boundaries.
 
 > Designed and engineered by Rodrigo Alves Ruza as an executable demonstration of senior full-stack and solution architecture experience.
 
-![SignalForge campaign operations dashboard](docs/images/signalforge-dashboard.png)
+![Ruzo Solutions campaign operations dashboard](docs/images/ruzo-solutions-dashboard.png)
 
 ## Why this project exists
 
@@ -32,6 +32,10 @@ The repository translates real career signals into running software rather than 
 - Asynchronous delivery simulation through a bounded background worker
 - Real-time SignalR events and automatic client reconnection
 - Responsive dark operations UI with accessible interaction states
+- Segmented pt-BR / en-US language controls with persisted preference
+- Technical comparison between the modular monolith and a microservices scale-out variant
+- Public project gallery with live previews and direct repository links
+- Career narrative and language-specific resume viewing and downloads
 - Resilient frontend demo snapshot when the API is unavailable
 - REST, OpenAPI, health, compression, rate limiting, and Problem Details
 - Multi-stage, non-root Docker image with persistent data and a health check
@@ -58,21 +62,21 @@ The repository translates real career signals into running software rather than 
 docker compose up --build
 ```
 
-Open [http://localhost:8080](http://localhost:8080). Data is retained in the named `signalforge-data` volume.
+Open [http://localhost:8080](http://localhost:8080). Data is retained in the named `ruzo-solutions-data` volume.
 
 ### Local development
 
 Requirements: .NET SDK 10 and Node.js 24 with pnpm 10.
 
 ```bash
-dotnet run --project src/SignalForge.Api
+dotnet run --project src/RuzoSolutions.Api
 ```
 
 In another terminal:
 
 ```bash
-pnpm --dir src/SignalForge.Web install
-pnpm --dir src/SignalForge.Web dev
+pnpm --dir src/RuzoSolutions.Web install
+pnpm --dir src/RuzoSolutions.Web dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173). Vite proxies API and SignalR traffic to ASP.NET Core.
@@ -83,11 +87,11 @@ Open [http://localhost:5173](http://localhost:5173). Vite proxies API and Signal
 dotnet restore
 dotnet build --configuration Release --no-restore
 dotnet test --configuration Release --no-build
-pnpm --dir src/SignalForge.Web install --frozen-lockfile
-pnpm --dir src/SignalForge.Web lint
-pnpm --dir src/SignalForge.Web typecheck
-pnpm --dir src/SignalForge.Web build
-docker build -t signalforge:local .
+pnpm --dir src/RuzoSolutions.Web install --frozen-lockfile
+pnpm --dir src/RuzoSolutions.Web lint
+pnpm --dir src/RuzoSolutions.Web typecheck
+pnpm --dir src/RuzoSolutions.Web build
+docker build -t ruzo-solutions:local .
 ```
 
 ## API surface
@@ -109,13 +113,13 @@ The OpenAPI document is exposed at `/openapi/v1.json` in Development.
 
 ```text
 src/
-  SignalForge.Domain/          Business invariants and campaign lifecycle
-  SignalForge.Application/     Use cases, contracts, and infrastructure ports
-  SignalForge.Infrastructure/  EF Core, SQLite, repository, and demo seed
-  SignalForge.Api/             HTTP edge, SignalR, worker, and composition root
-  SignalForge.Web/             React operations console
+  RuzoSolutions.Domain/          Business invariants and campaign lifecycle
+  RuzoSolutions.Application/     Use cases, contracts, and infrastructure ports
+  RuzoSolutions.Infrastructure/  EF Core, SQLite, repository, and demo seed
+  RuzoSolutions.Api/             HTTP edge, SignalR, worker, and composition root
+  RuzoSolutions.Web/             React operations console
 tests/
-  SignalForge.Tests/           Domain behavior tests
+  RuzoSolutions.Tests/           Domain behavior tests
 docs/
   architecture.md              Runtime and dependency model
   adr/                         Architectural decision records
@@ -127,7 +131,7 @@ Read [the architecture guide](docs/architecture.md) and [ADR 0001](docs/adr/0001
 
 ### Modular monolith first
 
-Distribution is a deployment decision, not a prerequisite for good boundaries. SignalForge compiles the layers independently and keeps the domain free of framework concerns while shipping one low-friction runtime. The worker can later move behind Kafka or RabbitMQ without rewriting the business lifecycle.
+Distribution is a deployment decision, not a prerequisite for good boundaries. Ruzo Solutions compiles the layers independently and keeps the domain free of framework concerns while shipping one low-friction runtime. The worker can later move behind Kafka or RabbitMQ without rewriting the business lifecycle.
 
 ### SQLite for self-sufficiency
 

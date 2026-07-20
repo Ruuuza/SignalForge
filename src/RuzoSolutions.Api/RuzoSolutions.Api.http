@@ -1,0 +1,6 @@
+@RuzoSolutions.Api_HostAddress = http://localhost:5100
+
+GET {{RuzoSolutions.Api_HostAddress}}/health
+Accept: application/json
+
+###
